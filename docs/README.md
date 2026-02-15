@@ -25,8 +25,10 @@ A HTML template integrated with the given GitHub repository templates, based on 
 
 ## Team
 -  E/22/323, Anushka Madawa, [e22323@eng.pdn.ac.lk](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
+-  E/22/131, Hansika Iddagoda, [e22131@eng.pdn.ac.lk](mailto:name@email.com)
+-  E/22/427, Hansaka Wickramarathna, [e22427@eng.pdn.ac.lk]     (mailto:name@email.com)
+-  E/22/322, Tharusha Rashmika
+, [e22322@eng.pdn.ac.lk]     (mailto:name@email.com)
 
 <!-- Image (photo/drawing of the final hardware) should be here -->
 
