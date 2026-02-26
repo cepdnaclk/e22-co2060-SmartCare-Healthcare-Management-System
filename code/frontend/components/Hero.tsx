@@ -14,9 +14,7 @@ export default function Hero() {
             
 
         </div>
-        <div>
-         <Image src={/Hero.png} alt="Hero" width= ></Image>
-        </div>
+        
     </section>
       );
 }
