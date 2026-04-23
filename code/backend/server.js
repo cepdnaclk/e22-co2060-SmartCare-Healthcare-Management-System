@@ -50,17 +50,12 @@ const createPermanentAdmin = async () => {
 };
 
 const startServer = async () => {
-  try {
-    console.log("Starting server and connecting to MongoDB...");
-    await connectDB();
-    app.listen(PORT, () => {
-      console.log("Server running on port " + PORT);
-    });
-    await createPermanentAdmin();
-  } catch (error) {
-    console.error("Error starting server:", error);
-    process.exit(1);
-  }
+  console.log("Starting server and connecting to MongoDB...");
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log("Server running on port " + PORT);
+  });
+  await createPermanentAdmin();
 };
 
 startServer();
