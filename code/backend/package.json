@@ -5,11 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
-    "start": "node ./server.js",
-=======
     "start": "node server.js",
->>>>>>> deverlopment
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
