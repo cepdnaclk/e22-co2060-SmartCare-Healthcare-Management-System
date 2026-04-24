@@ -1,13 +1,16 @@
-import Hero from "@/components/Hero";
-import Navbar from "@/components/Navbar";
+import Image from "next/image";
+import LoginPage from "./login/page";
+import RegisterPage from "./register/page";
+import Hero from "./home/Hero";
+import Navbar from "./navbar/Navbar";
 
 export default function Home() {
   return (
-    <>
-      <Navbar />
-      <Hero />
-      
-
-    </>
+          <main>
+            <Hero/>
+            
+            
+ 
+          </main>
   );
 }
