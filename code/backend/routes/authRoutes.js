@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
 import Appointment from "../models/appointment.js";
+import Service from "../models/service.js";
 
 const router = express.Router();
 
@@ -101,6 +102,33 @@ router.post("/create-doctor", isAdmin, upload.single("image"), async (req, res) 
     res.status(500).json(error);
   }
 });
+//ADMIN:Services
+router.post("/services", isAdmin, upload.single("image"), async (req, res) => {
+  try {
+    const { name, description } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "An image file is required." });
+    }
+
+    const imagePath = `/uploads/${req.file.filename}`;
+
+    const newService = new Service({
+      name,
+      description,
+      image: imagePath,
+    });
+
+    await newService.save();
+
+    res.status(201).json({ message: "Service added successfully!" });
+  } catch (error) {
+    // 🔴 THIS WILL PRINT THE EXACT REASON FOR THE CRASH IN YOUR TERMINAL!
+    console.error("🔥 CRASH REASON:", error); 
+    
+    res.status(500).json({ message: "Server error while adding service." });
+  }
+});
 
 // DOCTOR: SET AVAILABILITY
 router.post("/doctor/availability", authenticateToken, async (req, res) => {
@@ -112,6 +140,7 @@ router.post("/doctor/availability", authenticateToken, async (req, res) => {
     res.status(500).json(error);
   }
 });
+
 
 // ==========================================================
 // 🔴 PUBLIC ROUTES (Removed authenticateToken!)
@@ -182,6 +211,15 @@ router.get("/doctor/profile", authenticateToken, async (req, res) => {
     res.json(doctor);
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+// EVERYONE: GET ALL SERVICES (Public route for the landing page)
+router.get("/services", async (req, res) => {
+  try {
+    const services = await Service.find();
+    res.json(services);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching services", error });
   }
 });
 
