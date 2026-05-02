@@ -6,6 +6,8 @@ import multer from "multer";
 import path from "path";
 import Appointment from "../models/appointment.js";
 import Service from "../models/service.js";
+import Review from "../models/Review.js";
+import Testimonial from "../models/Testimonial.js";
 
 const router = express.Router();
 
@@ -102,7 +104,8 @@ router.post("/create-doctor", isAdmin, upload.single("image"), async (req, res) 
     res.status(500).json(error);
   }
 });
-//ADMIN:Services
+
+// ADMIN: CREATE SERVICES
 router.post("/services", isAdmin, upload.single("image"), async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -123,10 +126,91 @@ router.post("/services", isAdmin, upload.single("image"), async (req, res) => {
 
     res.status(201).json({ message: "Service added successfully!" });
   } catch (error) {
-    // 🔴 THIS WILL PRINT THE EXACT REASON FOR THE CRASH IN YOUR TERMINAL!
     console.error("🔥 CRASH REASON:", error); 
-    
     res.status(500).json({ message: "Server error while adding service." });
+  }
+});
+
+// ADMIN: REMOVE SERVICE
+router.delete("/services/:id", isAdmin, async (req, res) => {
+  try {
+    const deletedService = await Service.findByIdAndDelete(req.params.id);
+    if (!deletedService) return res.status(404).json({ message: "Service not found" });
+    res.json({ message: "Service removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error deleting service", error });
+  }
+});
+
+// GET all testimonials (Public Route)
+router.get('/', async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find().sort({ createdAt: -1 });
+    res.json(testimonials);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST new testimonial (Admin Route)
+router.post('/', async (req, res) => {
+  const testimonial = new Testimonial({
+    name: req.body.name,
+    text: req.body.text,
+    image: req.body.image,
+  });
+
+  try {
+    const newTestimonial = await testimonial.save();
+    res.status(201).json(newTestimonial);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+// ==========================================================
+// 🔴 PUBLIC ROUTES: REVIEWS
+// ==========================================================
+
+// EVERYONE: GET ALL REVIEWS
+router.get("/reviews", async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching reviews", error });
+  }
+});
+
+// ADMIN: CREATE A REVIEW
+router.post("/reviews", isAdmin, async (req, res) => {
+  try {
+    const { name, review, image } = req.body;
+
+    if (!name || !review || !image) {
+      return res.status(400).json({ message: "Please provide all required fields." });
+    }
+
+    const newReview = new Review({
+      name,
+      review,
+      image,
+    });
+
+    const savedReview = await newReview.save();
+    res.status(201).json(savedReview);
+  } catch (error) {
+    res.status(500).json({ message: "Error creating review", error });
+  }
+});
+
+// ADMIN: REMOVE A REVIEW
+router.delete("/reviews/:id", isAdmin, async (req, res) => {
+  try {
+    const deletedReview = await Review.findByIdAndDelete(req.params.id);
+    if (!deletedReview) return res.status(404).json({ message: "Review not found" });
+    res.json({ message: "Review removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting review", error });
   }
 });
 
@@ -141,12 +225,11 @@ router.post("/doctor/availability", authenticateToken, async (req, res) => {
   }
 });
 
-
 // ==========================================================
-// 🔴 PUBLIC ROUTES (Removed authenticateToken!)
+// 🔴 PUBLIC ROUTES
 // ==========================================================
 
-// EVERYONE: GET ALL DOCTORS (Public)
+// EVERYONE: GET ALL DOCTORS
 router.get("/doctors", async (req, res) => {
   try {
     const doctors = await User.find({ role: "doctor" }).select("name specialization image rating availability");
@@ -156,7 +239,7 @@ router.get("/doctors", async (req, res) => {
   }
 });
 
-// EVERYONE: GET A SINGLE DOCTOR BY ID (Public)
+// EVERYONE: GET A SINGLE DOCTOR BY ID
 router.get("/doctors/:id", async (req, res) => {
   try {
     const doctor = await User.findById(req.params.id).select("-password");
@@ -169,8 +252,18 @@ router.get("/doctors/:id", async (req, res) => {
   }
 });
 
+// EVERYONE: GET ALL SERVICES 
+router.get("/services", async (req, res) => {
+  try {
+    const services = await Service.find();
+    res.json(services);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching services", error });
+  }
+});
+
 // ==========================================================
-// SECURE ROUTES (Require Login)
+// SECURE ROUTES (Require Login Required )
 // ==========================================================
 
 // PATIENT: BOOK AN APPOINTMENT
@@ -211,15 +304,6 @@ router.get("/doctor/profile", authenticateToken, async (req, res) => {
     res.json(doctor);
   } catch (error) {
     res.status(500).json(error);
-  }
-});
-// EVERYONE: GET ALL SERVICES (Public route for the landing page)
-router.get("/services", async (req, res) => {
-  try {
-    const services = await Service.find();
-    res.json(services);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching services", error });
   }
 });
 
