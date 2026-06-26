@@ -4,7 +4,9 @@ import "dotenv/config";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import User from "./models/user.js";
+import Appointment from "./models/appointment.js";
 import bcrypt from "bcryptjs";
+import cron from "node-cron";
 
 const app = express();
 
@@ -17,6 +19,50 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api", authRoutes);
 
 const PORT = 5000;
+
+// --- APPOINTMENT REMINDER CRON JOB ---
+// Runs every day at 9:00 AM to log reminders for tomorrow's appointments
+// To enable real SMS, replace logReminder() with your SMS provider (e.g. Twilio, Vonage)
+const setupAppointmentReminders = () => {
+  cron.schedule("0 9 * * *", async () => {
+    console.log("⏰ Running daily appointment reminder check...");
+
+    try {
+      // Calculate tomorrow's date in YYYY-MM-DD format
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split("T")[0]; // e.g., "2026-06-27"
+
+      // Find all appointments for tomorrow
+      const tomorrowAppointments = await Appointment.find({ date: tomorrowStr })
+        .populate("doctorId", "name specialization");
+
+      if (tomorrowAppointments.length === 0) {
+        console.log("📅 No appointments found for tomorrow.");
+        return;
+      }
+
+      console.log(`📅 Found ${tomorrowAppointments.length} appointment(s) for tomorrow (${tomorrowStr}).`);
+
+      // Log reminder for each patient (replace with real SMS provider when ready)
+      for (const appt of tomorrowAppointments) {
+        if (appt.phone) {
+          const doctorName = appt.doctorId?.name || "your doctor";
+          const message = `🏥 SmartCare Reminder: Hi ${appt.patientName}, you have an appointment with Dr. ${doctorName} tomorrow (${appt.date}) at ${appt.time}. Please arrive 10 minutes early.`;
+          console.log(`📱 REMINDER → To: ${appt.phone} | Message: ${message}`);
+        } else {
+          console.log(`⚠️ No phone number for patient: ${appt.patientName}, skipping reminder.`);
+        }
+      }
+
+      console.log("✅ Appointment reminders processed successfully.");
+    } catch (error) {
+      console.error("❌ Error running appointment reminders:", error);
+    }
+  });
+
+  console.log("📱 Appointment reminder cron job scheduled (daily at 9:00 AM).");
+};
 
 const createPermanentAdmin = async () => {
   try {
@@ -56,6 +102,7 @@ const startServer = async () => {
     console.log("Server running on port " + PORT);
   });
   await createPermanentAdmin();
+  setupAppointmentReminders();
 };
 
 startServer();

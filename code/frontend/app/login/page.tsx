@@ -79,41 +79,41 @@ export default function LoginPage() {
       <Navbar />
 
       {/* --- MAIN CONTENT --- */}
-      <div className="flex-grow flex items-center justify-center p-6">
-        <div className="w-full max-w-md bg-white rounded-3xl p-10 shadow-xl border border-slate-100">
+      <div className="flex-grow flex items-center justify-center px-6 sm:px-12 lg:px-20 py-4">
+        <div className="w-full max-w-sm bg-white rounded-lg p-7 shadow-lg border border-slate-100">
           
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
-              <LogIn className="w-8 h-8 ml-1" />
+          <div className="text-center mb-6">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+              <LogIn className="w-6 h-6 ml-0.5" />
             </div>
-            <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">
+            <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">
               Welcome Back
             </h2>
-            <p className="text-slate-500 mt-2 font-medium text-sm">
+            <p className="text-slate-500 mt-1 font-medium text-xs">
               Log in to manage your appointments and schedule.
             </p>
           </div>
 
           {error && (
-            <div className="mb-6 rounded-xl bg-red-50 border border-red-100 p-4 text-sm text-red-600 font-bold text-center">
+            <div className="mb-4 rounded-lg bg-red-50 border border-red-100 p-3 text-xs text-red-600 font-bold text-center">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4">
             
             {/* EMAIL INPUT */}
             <div className="relative">
-              <label className="mb-1 block text-sm font-bold text-slate-700">Email Address</label>
+              <label className="mb-1 block text-xs font-bold text-slate-700">Email Address</label>
               <div className="relative">
-                <Mail className="w-5 h-5 absolute left-4 top-3.5 text-slate-400" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading || isSuccess}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-11 py-3 focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-sm focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
                   placeholder="name@example.com"
                 />
               </div>
@@ -121,16 +121,16 @@ export default function LoginPage() {
 
             {/* PASSWORD INPUT */}
             <div className="relative">
-              <label className="mb-1 block text-sm font-bold text-slate-700">Password</label>
+              <label className="mb-1 block text-xs font-bold text-slate-700">Password</label>
               <div className="relative">
-                <Lock className="w-5 h-5 absolute left-4 top-3.5 text-slate-400" />
+                <Lock className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading || isSuccess}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-11 py-3 focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 pl-10 pr-4 py-2.5 text-sm focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all font-medium"
                   placeholder="••••••••"
                 />
               </div>
@@ -140,8 +140,8 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || isSuccess}
-              className={`w-full flex items-center justify-center rounded-xl px-4 py-4 font-bold text-white transition-all shadow-md mt-2
-                ${isSuccess ? 'bg-green-500 hover:bg-green-500' : 'bg-slate-800 hover:bg-blue-600 hover:-translate-y-1'}
+              className={`w-full flex items-center justify-center rounded-lg px-4 py-3 font-bold text-sm text-white transition-all shadow-md mt-1
+                ${isSuccess ? 'bg-green-500 hover:bg-green-500' : 'bg-slate-800 hover:bg-blue-600 hover:-translate-y-0.5'}
                 ${(isLoading && !isSuccess) ? 'bg-slate-400 hover:bg-slate-400 hover:translate-y-0 cursor-not-allowed' : ''}
               `}
             >
@@ -160,7 +160,7 @@ export default function LoginPage() {
           </form>
 
           {/* REGISTER LINK */}
-          <div className="mt-8 text-center text-sm font-medium text-slate-500 border-t border-slate-100 pt-6">
+          <div className="mt-6 text-center text-xs font-medium text-slate-500 border-t border-slate-100 pt-4">
             Don't have an account yet?{" "}
             <Link href="/register" className="font-bold text-blue-600 hover:text-blue-800 hover:underline transition-colors">
               Sign up here

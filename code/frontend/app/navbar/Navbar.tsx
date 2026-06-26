@@ -103,28 +103,28 @@ export default function Navbar() {
             <Link
               href="/"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#a1e2e8] transition-colors"
+              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#35838D] transition-colors"
             >
               Home
             </Link>
             <Link
               href="/doctors"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#a1e2e8] transition-colors"
+              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#35838D] transition-colors"
             >
               Doctors
             </Link>
             <Link
               href="/patient/book"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#a1e2e8] transition-colors"
+              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#35838D] transition-colors"
             >
               Appointments
             </Link>
             <Link
               href={dashboardUrl}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#a1e2e8] transition-colors"
+              className="px-8 py-4 text-xl font-bold text-slate-800 hover:bg-[#35838D] transition-colors"
             >
               Dashboard
             </Link>

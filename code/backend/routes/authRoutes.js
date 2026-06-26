@@ -182,18 +182,20 @@ router.get("/reviews", async (req, res) => {
 });
 
 // ADMIN: CREATE A REVIEW
-router.post("/reviews", isAdmin, async (req, res) => {
+router.post("/reviews", isAdmin, upload.single("image"), async (req, res) => {
   try {
-    const { name, review, image } = req.body;
+    const { name, review } = req.body;
 
-    if (!name || !review || !image) {
+    if (!name || !review || !req.file) {
       return res.status(400).json({ message: "Please provide all required fields." });
     }
+
+    const imagePath = `/uploads/${req.file.filename}`;
 
     const newReview = new Review({
       name,
       review,
-      image,
+      image: imagePath,
     });
 
     const savedReview = await newReview.save();
@@ -318,11 +320,22 @@ router.delete("/doctor/:id", isAdmin, async (req, res) => {
   }
 });
 
-// PATIENT/DOCTOR: CANCEL AN APPOINTMENT
+// PATIENT/DOCTOR: CANCEL AN APPOINTMENT (with ownership check)
 router.delete("/appointments/:id", authenticateToken, async (req, res) => {
   try {
-    const deletedAppt = await Appointment.findByIdAndDelete(req.params.id);
-    if (!deletedAppt) return res.status(404).json({ message: "Appointment not found" });
+    const appointment = await Appointment.findById(req.params.id);
+    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+
+    // Only the patient who booked it OR the assigned doctor can cancel
+    const isOwner =
+      appointment.patientId.toString() === req.user.id ||
+      appointment.doctorId.toString() === req.user.id;
+
+    if (!isOwner) {
+      return res.status(403).json({ message: "You are not authorized to cancel this appointment." });
+    }
+
+    await Appointment.findByIdAndDelete(req.params.id);
     res.json({ message: "Appointment cancelled successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error cancelling appointment", error });

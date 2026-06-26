@@ -41,8 +41,8 @@ export default function AdminDashboard() {
   const [reviewData, setReviewData] = useState({
     name: "",
     review: "",
-    image: "",
   });
+  const [reviewImage, setReviewImage] = useState<File | null>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewMsg, setReviewMsg] = useState("");
   const [loadingReview, setLoadingReview] = useState(false);
@@ -189,19 +189,29 @@ export default function AdminDashboard() {
     setLoadingReview(true);
     const token = localStorage.getItem("token");
 
+    const dataToSend = new FormData();
+    dataToSend.append("name", reviewData.name);
+    dataToSend.append("review", reviewData.review);
+    if (reviewImage) {
+      dataToSend.append("image", reviewImage);
+    } else {
+      setReviewMsg("Image is required for reviews.");
+      setLoadingReview(false);
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:5000/api/reviews", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(reviewData),
+        headers: { Authorization: `Bearer ${token}` },
+        body: dataToSend,
       });
       const data = await response.json();
 
       if (response.ok) {
-        setReviewData({ name: "", review: "", image: "" });
+        setReviewData({ name: "", review: "" });
+        setReviewImage(null);
+        (document.getElementById("revImageInput") as HTMLInputElement).value = "";
         setReviewMsg("Review added successfully.");
         fetchData();
       } else {
@@ -238,43 +248,43 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-[#f0f9fa] via-[#e6f7f8] to-[#edf5f5] font-sans text-slate-800 pb-20">
       <Navbar />
 
-      <div className="px-6 md:px-12 max-w-7xl mx-auto mt-12">
+      <div className="px-6 sm:px-12 lg:px-20 max-w-6xl mx-auto mt-4 sm:mt-8">
         {/* HEADER */}
-        <div className="flex items-center mb-12 border-b border-teal-500/10 pb-6 justify-between flex-wrap gap-4">
+        <div className="flex items-center mb-5 sm:mb-8 border-b border-teal-500/10 pb-3 sm:pb-4 justify-between flex-wrap gap-2">
           <div>
-            <h1 className="text-5xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#0f4c5c] via-[#2d7687] to-[#e58221] uppercase">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#0f4c5c] via-[#2d7687] to-[#e58221] uppercase">
               Admin Panel
             </h1>
-            <p className="text-[#597e88] font-semibold tracking-wider text-xs mt-2 uppercase">
-              Manage personnel, medical services, and customer reviews
+            <p className="text-[#597e88] font-semibold tracking-wider text-[9px] sm:text-[10px] mt-1 uppercase">
+              Manage personnel, services, and reviews
             </p>
           </div>
-          <span className="bg-[#a1e2e8]/40 text-[#0f4c5c] px-4 py-2 rounded-2xl border border-[#a1e2e8] text-sm font-black tracking-widest shadow-sm">
-            DASHBOARD VIEW
+          <span className="bg-[#35838D]/40 text-[#0f4c5c] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md border border-[#35838D] text-[10px] sm:text-xs font-black tracking-widest shadow-sm">
+            DASHBOARD
           </span>
         </div>
 
         {/* ========================================================== */}
         {/* SECTION 1: DOCTORS */}
         {/* ========================================================== */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-black uppercase mb-8 flex items-center text-[#0f4c5c]">
+        <div className="mb-8 sm:mb-12">
+          <h2 className="text-base sm:text-lg md:text-xl font-black uppercase mb-4 sm:mb-5 flex items-center text-[#0f4c5c]">
             Doctors Directory
           </h2>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1 bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-[#a1e2e8]/50 shadow-xl shadow-teal-500/5 h-fit">
-              <h3 className="text-xl font-extrabold uppercase mb-6 flex items-center border-b border-[#a1e2e8]/50 pb-4 text-[#0f4c5c]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+            <div className="lg:col-span-1 bg-white/70 backdrop-blur-xl p-4 sm:p-5 rounded-md sm:rounded-lg border border-[#35838D]/50 shadow-lg shadow-teal-500/5 h-fit">
+              <h3 className="text-sm font-extrabold uppercase mb-4 flex items-center border-b border-[#35838D]/50 pb-3 text-[#0f4c5c]">
                 Add Doctor
               </h3>
 
               {doctorMsg && (
-                <div className="mb-6 p-4 bg-[#e6f7f8] text-[#0f4c5c] border border-[#a1e2e8] font-bold text-sm uppercase rounded-2xl backdrop-blur-sm shadow-sm">
+                <div className="mb-4 p-3 bg-[#e6f7f8] text-[#0f4c5c] border border-[#35838D] font-bold text-xs uppercase rounded-md backdrop-blur-sm shadow-sm">
                   {doctorMsg}
                 </div>
               )}
 
-              <form onSubmit={handleAddDoctor} className="flex flex-col gap-4">
+              <form onSubmit={handleAddDoctor} className="flex flex-col gap-3">
                 <div className="relative">
                   <User className="w-5 h-5 absolute left-4 top-4 text-[#597e88]" />
                   <input
@@ -284,7 +294,7 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setDoctorData({ ...doctorData, name: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-10 p-3 rounded-md border border-slate-200 bg-white font-semibold text-slate-800 text-sm placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
@@ -297,7 +307,7 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setDoctorData({ ...doctorData, email: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-10 p-3 rounded-md border border-slate-200 bg-white font-semibold text-slate-800 text-sm placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
@@ -310,7 +320,7 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setDoctorData({ ...doctorData, password: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-10 p-3 rounded-md border border-slate-200 bg-white font-semibold text-slate-800 text-sm placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
@@ -326,7 +336,7 @@ export default function AdminDashboard() {
                         specialization: e.target.value,
                       })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-10 p-3 rounded-md border border-slate-200 bg-white font-semibold text-slate-800 text-sm placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
@@ -340,7 +350,7 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setDoctorData({ ...doctorData, rating: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-10 p-3 rounded-md border border-slate-200 bg-white font-semibold text-slate-800 text-sm placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
@@ -355,36 +365,36 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setDoctorImage(e.target.files?.[0] || null)
                     }
-                    className="w-full p-2 rounded-2xl border border-slate-200 bg-white text-sm font-bold cursor-pointer text-[#597e88] file:border-0 file:bg-[#a1e2e8] file:text-[#0f4c5c] file:px-4 file:py-2 file:rounded-xl file:mr-3 hover:file:bg-[#71d2da] transition duration-200"
+                    className="w-full p-2 rounded-lg border border-slate-200 bg-white text-sm font-bold cursor-pointer text-[#597e88] file:border-0 file:bg-[#35838D] file:text-[#0f4c5c] file:px-4 file:py-2 file:rounded-md file:mr-3 hover:file:bg-[#71d2da] transition duration-200"
                     required
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#0f4c5c] to-[#1b263b] text-white p-4 rounded-2xl font-black uppercase mt-3 shadow-lg hover:brightness-110 active:scale-98 transition duration-200"
+                  className="w-full bg-gradient-to-r from-[#0f4c5c] to-[#1b263b] text-white p-3 rounded-md font-black uppercase mt-2 text-sm shadow-lg hover:brightness-110 active:scale-98 transition duration-200"
                 >
                   Add Doctor
                 </button>
               </form>
             </div>
 
-            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-[#a1e2e8]/50 shadow-xl shadow-teal-500/5">
-              <h3 className="text-xl font-extrabold uppercase mb-6 border-b border-[#a1e2e8]/50 pb-4 text-[#0f4c5c]">
+            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl p-5 rounded-lg border border-[#35838D]/50 shadow-lg shadow-teal-500/5">
+              <h3 className="text-sm font-extrabold uppercase mb-4 border-b border-[#35838D]/50 pb-3 text-[#0f4c5c]">
                 Active Staff
               </h3>
               {doctors.length === 0 ? (
-                <div className="text-center py-10 font-bold text-[#597e88] uppercase tracking-widest">
+                <div className="text-center py-6 font-bold text-[#597e88] uppercase tracking-widest text-xs">
                   No doctors found.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {doctors.map((doc) => (
                     <div
                       key={doc._id}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 group bg-white hover:shadow-lg transition duration-300 backdrop-blur-sm"
+                      className="flex items-center justify-between p-3 rounded-md border border-slate-200 group bg-white hover:shadow-lg transition duration-300 backdrop-blur-sm"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-[#e6f7f8] border border-[#a1e2e8] rounded-2xl overflow-hidden shadow-inner">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#e6f7f8] border border-[#35838D] rounded-md overflow-hidden shadow-inner">
                           {doc.image && (
                             <img
                               src={`http://localhost:5000${doc.image}`}
@@ -404,9 +414,9 @@ export default function AdminDashboard() {
                       </div>
                       <button
                         onClick={() => handleRemoveDoctor(doc._id, doc.name)}
-                        className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-2xl hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200 shadow-sm"
+                        className="p-2 bg-red-50 text-red-500 border border-red-100 rounded-md hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200 shadow-sm"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
@@ -419,19 +429,19 @@ export default function AdminDashboard() {
         {/* ========================================================== */}
         {/* SECTION 2: SERVICES */}
         {/* ========================================================== */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-black uppercase mb-8 flex items-center text-[#0f4c5c]">
+        <div className="mb-8 sm:mb-12">
+          <h2 className="text-base sm:text-lg md:text-xl font-black uppercase mb-4 sm:mb-5 flex items-center text-[#0f4c5c]">
             Hospital Services
           </h2>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1 bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-[#a1e2e8]/50 shadow-xl shadow-teal-500/5 h-fit">
-              <h3 className="text-xl font-extrabold uppercase mb-6 flex items-center border-b border-[#a1e2e8]/50 pb-4 text-[#0f4c5c]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
+            <div className="lg:col-span-1 bg-white/70 backdrop-blur-xl p-4 sm:p-5 rounded-md sm:rounded-lg border border-[#35838D]/50 shadow-lg shadow-teal-500/5 h-fit">
+              <h3 className="text-sm font-extrabold uppercase mb-4 flex items-center border-b border-[#35838D]/50 pb-3 text-[#0f4c5c]">
                 Add Service
               </h3>
 
               {serviceMsg && (
-                <div className="mb-6 p-4 bg-[#e6f7f8] text-[#0f4c5c] border border-[#a1e2e8] font-bold text-sm uppercase rounded-2xl backdrop-blur-sm shadow-sm">
+                <div className="mb-6 p-4 bg-[#e6f7f8] text-[#0f4c5c] border border-[#35838D] font-bold text-sm uppercase rounded-lg backdrop-blur-sm shadow-sm">
                   {serviceMsg}
                 </div>
               )}
@@ -446,7 +456,7 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setServiceData({ ...serviceData, name: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-12 p-4 rounded-lg border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
@@ -461,7 +471,7 @@ export default function AdminDashboard() {
                         description: e.target.value,
                       })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none resize-none h-24 transition duration-200"
+                    className="w-full pl-12 p-4 rounded-lg border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none resize-none h-24 transition duration-200"
                     required
                   />
                 </div>
@@ -476,21 +486,21 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setServiceImage(e.target.files?.[0] || null)
                     }
-                    className="w-full p-2 rounded-2xl border border-slate-200 bg-white text-sm font-bold cursor-pointer text-[#597e88] file:border-0 file:bg-[#a1e2e8] file:text-[#0f4c5c] file:px-4 file:py-2 file:rounded-xl file:mr-3 hover:file:bg-[#71d2da] transition duration-200"
+                    className="w-full p-2 rounded-lg border border-slate-200 bg-white text-sm font-bold cursor-pointer text-[#597e88] file:border-0 file:bg-[#35838D] file:text-[#0f4c5c] file:px-4 file:py-2 file:rounded-md file:mr-3 hover:file:bg-[#71d2da] transition duration-200"
                     required
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#0f4c5c] to-[#1b263b] text-white p-4 rounded-2xl font-black uppercase mt-3 shadow-lg hover:brightness-110 active:scale-98 transition duration-200"
+                  className="w-full bg-gradient-to-r from-[#0f4c5c] to-[#1b263b] text-white p-3 rounded-md font-black uppercase mt-2 text-sm shadow-lg hover:brightness-110 active:scale-98 transition duration-200"
                 >
                   Publish Service
                 </button>
               </form>
             </div>
 
-            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-[#a1e2e8]/50 shadow-xl shadow-teal-500/5">
-              <h3 className="text-xl font-extrabold uppercase mb-6 border-b border-[#a1e2e8]/50 pb-4 text-[#0f4c5c]">
+            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl p-4 sm:p-5 rounded-md sm:rounded-lg border border-[#35838D]/50 shadow-lg shadow-teal-500/5">
+              <h3 className="text-sm font-extrabold uppercase mb-4 border-b border-[#35838D]/50 pb-3 text-[#0f4c5c]">
                 Published Services
               </h3>
               {services.length === 0 ? (
@@ -502,10 +512,10 @@ export default function AdminDashboard() {
                   {services.map((serv) => (
                     <div
                       key={serv._id}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 group bg-white hover:shadow-lg transition duration-300 backdrop-blur-sm"
+                      className="flex items-center justify-between p-4 rounded-lg border border-slate-200 group bg-white hover:shadow-lg transition duration-300 backdrop-blur-sm"
                     >
                       <div className="flex items-center gap-4 overflow-hidden">
-                        <div className="w-14 h-14 bg-[#e6f7f8] border border-[#a1e2e8] rounded-2xl overflow-hidden shrink-0 shadow-inner">
+                        <div className="w-14 h-14 bg-[#e6f7f8] border border-[#35838D] rounded-lg overflow-hidden shrink-0 shadow-inner">
                           {serv.image && (
                             <img
                               src={`http://localhost:5000${serv.image}`}
@@ -525,7 +535,7 @@ export default function AdminDashboard() {
                       </div>
                       <button
                         onClick={() => handleRemoveService(serv._id, serv.name)}
-                        className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-2xl hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200 shrink-0 ml-4 shadow-sm"
+                        className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200 shrink-0 ml-4 shadow-sm"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -541,19 +551,19 @@ export default function AdminDashboard() {
         {/* SECTION 3: REVIEWS */}
         {/* ========================================================== */}
         <div>
-          <h2 className="text-3xl font-black uppercase mb-8 flex items-center text-[#0f4c5c]">
+          <h2 className="text-base sm:text-lg md:text-xl font-black uppercase mb-4 sm:mb-5 flex items-center text-[#0f4c5c]">
             Testimonial Reviews
           </h2>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
             {/* ADD REVIEW FORM */}
-            <div className="lg:col-span-1 bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-[#a1e2e8]/50 shadow-xl shadow-teal-500/5 h-fit">
-              <h3 className="text-xl font-extrabold uppercase mb-6 flex items-center border-b border-[#a1e2e8]/50 pb-4 text-[#0f4c5c]">
+            <div className="lg:col-span-1 bg-white/70 backdrop-blur-xl p-4 sm:p-5 rounded-md sm:rounded-lg border border-[#35838D]/50 shadow-lg shadow-teal-500/5 h-fit">
+              <h3 className="text-sm font-extrabold uppercase mb-4 flex items-center border-b border-[#35838D]/50 pb-3 text-[#0f4c5c]">
                 Add Review
               </h3>
 
               {reviewMsg && (
-                <div className="mb-6 p-4 bg-[#e6f7f8] text-[#0f4c5c] border border-[#a1e2e8] font-bold text-sm uppercase rounded-2xl backdrop-blur-sm shadow-sm">
+                <div className="mb-6 p-4 bg-[#e6f7f8] text-[#0f4c5c] border border-[#35838D] font-bold text-sm uppercase rounded-lg backdrop-blur-sm shadow-sm">
                   {reviewMsg}
                 </div>
               )}
@@ -568,20 +578,22 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setReviewData({ ...reviewData, name: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full pl-12 p-4 rounded-lg border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none transition duration-200"
                     required
                   />
                 </div>
-                <div className="relative">
-                  <ImageIcon className="w-5 h-5 absolute left-4 top-4 text-[#597e88]" />
+                <div className="relative mt-2">
+                  <label className="block text-xs font-black uppercase mb-2 text-[#597e88] tracking-wider">
+                    Client Image
+                  </label>
                   <input
-                    type="text"
-                    placeholder="Image URL"
-                    value={reviewData.image}
+                    id="revImageInput"
+                    type="file"
+                    accept="image/*"
                     onChange={(e) =>
-                      setReviewData({ ...reviewData, image: e.target.value })
+                      setReviewImage(e.target.files?.[0] || null)
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none transition duration-200"
+                    className="w-full p-2 rounded-lg border border-slate-200 bg-white text-sm font-bold cursor-pointer text-[#597e88] file:border-0 file:bg-[#35838D] file:text-[#0f4c5c] file:px-4 file:py-2 file:rounded-md file:mr-3 hover:file:bg-[#71d2da] transition duration-200"
                     required
                   />
                 </div>
@@ -593,24 +605,24 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setReviewData({ ...reviewData, review: e.target.value })
                     }
-                    className="w-full pl-12 p-4 rounded-2xl border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#a1e2e8] focus:ring-4 focus:ring-[#a1e2e8]/30 outline-none resize-none h-24 transition duration-200"
+                    className="w-full pl-12 p-4 rounded-lg border border-slate-200 bg-white font-semibold text-slate-800 placeholder:text-[#597e88]/70 focus:border-[#35838D] focus:ring-4 focus:ring-[#35838D]/30 outline-none resize-none h-24 transition duration-200"
                     required
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loadingReview}
-                  className="w-full bg-gradient-to-r from-[#0f4c5c] to-[#1b263b] text-white p-4 rounded-2xl font-black uppercase mt-3 shadow-lg hover:brightness-110 active:scale-98 transition duration-200 flex justify-center items-center gap-2"
+                  className="w-full bg-gradient-to-r from-[#0f4c5c] to-[#1b263b] text-white p-3 rounded-md font-black uppercase mt-2 text-sm shadow-lg hover:brightness-110 active:scale-98 transition duration-200 flex justify-center items-center gap-2"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-4 h-4" />
                   {loadingReview ? "Saving..." : "Add Review"}
                 </button>
               </form>
             </div>
 
             {/* REVIEWS LIST */}
-            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-[#a1e2e8]/50 shadow-xl shadow-teal-500/5">
-              <h3 className="text-xl font-extrabold uppercase mb-6 border-b border-[#a1e2e8]/50 pb-4 text-[#0f4c5c]">
+            <div className="lg:col-span-2 bg-white/70 backdrop-blur-xl p-5 rounded-lg border border-[#35838D]/50 shadow-lg shadow-teal-500/5">
+              <h3 className="text-sm font-extrabold uppercase mb-4 border-b border-[#35838D]/50 pb-3 text-[#0f4c5c]">
                 Published Reviews
               </h3>
               {reviews.length === 0 ? (
@@ -622,10 +634,10 @@ export default function AdminDashboard() {
                   {reviews.map((r) => (
                     <div
                       key={r._id}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 group bg-white hover:shadow-lg transition duration-300 backdrop-blur-sm"
+                      className="flex items-center justify-between p-4 rounded-lg border border-slate-200 group bg-white hover:shadow-lg transition duration-300 backdrop-blur-sm"
                     >
                       <div className="flex items-center gap-4 overflow-hidden">
-                        <div className="w-14 h-14 bg-[#e6f7f8] border border-[#a1e2e8] rounded-2xl overflow-hidden shrink-0 shadow-inner">
+                        <div className="w-14 h-14 bg-[#e6f7f8] border border-[#35838D] rounded-lg overflow-hidden shrink-0 shadow-inner">
                           <img
                             src={
                               r.image.startsWith("http")
@@ -651,7 +663,7 @@ export default function AdminDashboard() {
                       </div>
                       <button
                         onClick={() => handleRemoveReview(r._id)}
-                        className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-2xl hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200 shrink-0 ml-4 shadow-sm"
+                        className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200 shrink-0 ml-4 shadow-sm"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

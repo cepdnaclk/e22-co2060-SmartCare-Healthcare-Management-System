@@ -72,7 +72,7 @@ export default function DoctorDetailsPage() {
           <AlertCircle className="w-16 h-16 text-red-500 mb-4 shadow-sm rounded-full bg-red-50" />
           <div className="text-red-600 font-bold text-2xl mb-2">Access Denied</div>
           <p className="text-slate-600 font-medium mb-8 max-w-md">{errorMessage}</p>
-          <Link href="/doctors" className="bg-slate-800 text-white px-8 py-4 font-bold hover:bg-blue-600 transition-colors flex items-center shadow-md hover:-translate-y-1 rounded-none">
+          <Link href="/doctors" className="bg-slate-800 text-white px-8 py-4 font-bold hover:bg-blue-600 transition-colors flex items-center shadow-md hover:-translate-y-1 rounded-xl w-fit mx-auto">
             <ArrowLeft className="w-5 h-5 mr-2" /> Return to Directory
           </Link>
         </div>
@@ -85,9 +85,9 @@ export default function DoctorDetailsPage() {
       
       <Navbar />
 
-      <div className="py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
+      <div className="py-8 sm:py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow">
         
-        <Link href="/doctors" className="inline-flex items-center text-slate-500 font-bold hover:text-blue-600 mb-8 transition-colors bg-white px-4 py-2 border border-slate-200 shadow-sm rounded-none hover:bg-blue-50">
+        <Link href="/doctors" className="inline-flex items-center text-slate-500 font-bold hover:text-blue-600 mb-8 transition-colors bg-white px-4 py-2 border border-slate-200 shadow-sm rounded-lg hover:bg-blue-50">
           <ArrowLeft className="w-5 h-5 mr-2" /> Back to All Specialists
         </Link>
 
@@ -96,47 +96,53 @@ export default function DoctorDetailsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-none p-0 shadow-sm border border-slate-200 flex flex-col md:flex-row overflow-hidden"
+          className="bg-white rounded-2xl p-6 sm:p-10 shadow-lg border border-slate-100 flex flex-col relative"
         >
           
-          {/* Left Side: Big Profile Image */}
-          <div className="md:w-2/5 h-80 md:h-auto shrink-0 bg-slate-100 flex items-center justify-center relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200">
-            {doctor.image ? (
-              <img src={`http://localhost:5000${doctor.image}`} alt={doctor.name} className="w-full h-full object-cover" />
-            ) : (
-              <User className="w-32 h-32 text-slate-300" />
-            )}
-            
-            <div className="absolute top-6 left-6 flex items-center bg-white/90 backdrop-blur-sm text-yellow-600 px-4 py-2 shadow-sm text-sm font-bold border border-yellow-100 rounded-none">
-              <Star className="w-5 h-5 mr-1 fill-current" />
-              {doctor.rating || "New"} Rating
+          {/* Top Section: Profile Picture and Basic Info */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-10 mb-10 pb-10 border-b border-slate-100">
+            {/* Small Profile Image */}
+            <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 bg-slate-100 rounded-full flex items-center justify-center relative overflow-hidden shadow-md border-4 border-white">
+              {doctor.image ? (
+                <img src={`http://localhost:5000${doctor.image}`} alt={doctor.name} className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-16 h-16 text-slate-300" />
+              )}
+            </div>
+
+            {/* Doctor Info */}
+            <div className="flex-1 text-center sm:text-left flex flex-col justify-center py-2">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight mb-2">
+                {doctor.name}
+              </h1>
+              <p className="text-base sm:text-xl text-blue-600 font-bold uppercase tracking-wider mb-4">
+                {doctor.specialization}
+              </p>
+              
+              <div className="inline-flex items-center justify-center sm:justify-start bg-yellow-50 text-yellow-700 px-4 py-2 shadow-sm text-sm font-bold border border-yellow-200 rounded-full w-fit mx-auto sm:mx-0">
+                <Star className="w-5 h-5 mr-1 fill-current" />
+                {doctor.rating || "New"} Rating
+              </div>
             </div>
           </div>
 
-          {/* Right Side: Details Section */}
-          <div className="flex-1 flex flex-col justify-between p-8 md:p-12 bg-white">
-            
+          {/* Details Section */}
+          <div className="flex-1 flex flex-col">
             <div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight mb-2">
-                {doctor.name}
-              </h1>
-              <p className="text-xl text-blue-600 font-bold uppercase tracking-wider mb-8">
-                {doctor.specialization}
-              </p>
-
-              <h3 className="text-xl font-extrabold text-slate-800 mb-6 flex items-center border-b border-slate-100 pb-3">
+              <h3 className="text-xl font-extrabold text-slate-800 mb-6 flex items-center">
                 <Calendar className="w-6 h-6 mr-3 text-blue-600" /> Weekly Availability
               </h3>
               
               {doctor.availability && doctor.availability.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
                   {doctor.availability.map((avail: any, index: number) => (
-                    <div key={index} className="bg-slate-50 border border-slate-200 p-4 hover:border-blue-300 transition-colors rounded-none">
+                    <div key={index} className="bg-slate-50 border border-slate-200 p-4 hover:border-blue-300 transition-colors rounded-xl shadow-sm">
                       <p className="font-extrabold text-slate-800 mb-2 border-b border-slate-200 pb-2">{avail.day}</p>
-                      <div className="flex flex-col gap-1 mt-3">
+                      <div className="flex flex-col gap-2 mt-3">
                         {avail.times.map((time: string, i: number) => (
-                          <div key={i} className="flex items-center text-sm font-bold text-slate-600 bg-white border border-slate-100 px-3 py-1.5 w-fit shadow-sm">
-                            <Clock className="w-4 h-4 mr-2 text-blue-400" /> {time}
+                          <div key={i} className="flex items-center justify-center text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm hover:bg-slate-50 transition-colors w-full">
+                            <Clock className="w-4 h-4 mr-2 text-blue-500 shrink-0" /> 
+                            <span>{time}</span>
                           </div>
                         ))}
                       </div>
@@ -144,7 +150,7 @@ export default function DoctorDetailsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-slate-50 border border-dashed border-slate-300 p-6 text-center text-slate-500 font-medium mb-10 rounded-none">
+                <div className="bg-slate-50 border border-dashed border-slate-300 p-8 text-center text-slate-500 font-medium mb-10 rounded-xl">
                   This specialist has not published their schedule yet.
                 </div>
               )}
@@ -153,11 +159,10 @@ export default function DoctorDetailsPage() {
             {/* Link to booking page */}
             <Link 
               href="/patient/book" 
-              className="bg-slate-800 text-white text-center py-5 px-8 font-bold hover:bg-blue-600 transition-all flex items-center justify-center group shadow-md rounded-none text-lg mt-auto"
+              className="bg-blue-600 text-white text-center py-4 px-8 font-bold hover:bg-blue-700 transition-all flex items-center justify-center group shadow-md rounded-xl text-lg mt-auto sm:w-fit sm:ml-auto"
             >
-              Book an Appointment <ChevronRight className="w-6 h-6 ml-2 group-hover:translate-x-2 transition-transform" />
+              Book an Appointment <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
-            
           </div>
 
         </motion.div>
