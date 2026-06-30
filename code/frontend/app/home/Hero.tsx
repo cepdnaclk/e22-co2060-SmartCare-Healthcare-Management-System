@@ -7,6 +7,7 @@ import Navbar from "../navbar/Navbar";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Footer from "../footer/Footer";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -418,7 +419,7 @@ export default function LandingPage() {
                         {doc.specialization || "Physician"}
                       </span>
                       <h3 className="text-lg font-black uppercase mb-1.5 text-slate-900 leading-tight tracking-tight line-clamp-1">
-                        Dr. {doc.name || "Doctor"}
+                        {doc.name || "Doctor"}
                       </h3>
                     </div>
 
@@ -595,32 +596,7 @@ export default function LandingPage() {
         <div className="absolute top-1/4 left-10 w-96 h-96 bg-[#35838D]/20 rounded-full blur-3xl -z-10" />
         <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl -z-10" />
       </section>
-
-      {/* 6. FOOTER */}
-      <footer className="bg-white px-6 md:px-16 lg:px-24 py-8 border-t border-slate-100 flex flex-col items-center">
-        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
-          {/* LOGO (Left) */}
-          <div className="md:w-1/4 text-2xl font-black tracking-tighter text-slate-900 text-center md:text-left">
-            LOGO
-          </div>
-
-          {/* MENU (Center) */}
-          <div className="md:w-2/4 flex justify-center items-center text-sm md:text-base font-bold gap-4 md:gap-8">
-            <Link href="/" className="hover:text-sky-500 transition-colors whitespace-nowrap">Home</Link>
-            <Link href="/doctors" className="hover:text-sky-500 transition-colors whitespace-nowrap">Doctors</Link>
-            <Link href="/patient/book" className="hover:text-sky-500 transition-colors whitespace-nowrap">Appointments</Link>
-            <Link href="#services" className="hover:text-sky-500 transition-colors whitespace-nowrap">Services</Link>
-          </div>
-
-          {/* Empty right side to balance */}
-          <div className="md:w-1/4 hidden md:block"></div>
-        </div>
-
-        {/* Copyright */}
-        <div className="text-xs font-semibold text-slate-400 text-center border-t border-slate-100 pt-6 w-full max-w-5xl">
-          &copy; {new Date().getFullYear()} AMdeverloper. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

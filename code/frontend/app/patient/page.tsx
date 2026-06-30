@@ -14,6 +14,7 @@ import {
   Activity,
 } from "lucide-react";
 import Navbar from "@/app/navbar/Navbar"; // Adjust this path if your Navbar is somewhere else!
+import Footer from "../footer/Footer";
 
 export default function PatientDashboard() {
   const [myAppointments, setMyAppointments] = useState<any[]>([]);
@@ -215,6 +216,7 @@ export default function PatientDashboard() {
           )}
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
   Plus,
   MessageSquare,
 } from "lucide-react";
+import Footer from "../footer/Footer";
 
 export default function AdminDashboard() {
   // --- DOCTOR STATE ---
@@ -245,6 +246,7 @@ export default function AdminDashboard() {
   };
 
   return (
+    <div>
     <div className="min-h-screen bg-gradient-to-br from-[#f0f9fa] via-[#e6f7f8] to-[#edf5f5] font-sans text-slate-800 pb-20">
       <Navbar />
 
@@ -675,6 +677,9 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      
+    </div>
+    <Footer/>
     </div>
   );
 }

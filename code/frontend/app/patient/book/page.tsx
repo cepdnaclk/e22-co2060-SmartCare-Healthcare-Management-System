@@ -17,6 +17,7 @@ import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/app/navbar/Navbar";
+import Footer from "@/app/footer/Footer";
 
 export default function BookingPage() {
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -369,6 +370,7 @@ export default function BookingPage() {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Star, User, Calendar, Clock, ArrowLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/app/navbar/Navbar"; // 🔴 Check this path matches your project!
+import Footer from "@/app/footer/Footer";
 
 export default function DoctorDetailsPage() {
   const [doctor, setDoctor] = useState<any>(null);
@@ -167,6 +168,7 @@ export default function DoctorDetailsPage() {
 
         </motion.div>
       </div>
+      <Footer/>
     </div>
   );
 }

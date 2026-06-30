@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star, User, ChevronRight, AlertCircle } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Navbar from "../navbar/Navbar";
+import Footer from "../footer/Footer";
 
 // --- ANIMATION SETTINGS ---
 const containerVariants: Variants = {
@@ -152,6 +153,7 @@ export default function DoctorsListingPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }
